@@ -33,6 +33,11 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Local Flutter/Android generation
+android/.gradle/
+android/local.properties
+ios/Flutter/ephemeral/
+
 # Symbolication related
 app.*.symbols
 

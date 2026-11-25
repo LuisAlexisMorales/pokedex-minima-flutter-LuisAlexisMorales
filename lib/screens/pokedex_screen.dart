@@ -56,10 +56,84 @@ class _PokedexScreenState extends State<PokedexScreen> {
                   : FutureBuilder<Pokemon>(
                       future: _futuroPokemon,
                       builder: (context, snapshot) {
-                        // INICIO TODO 3
-                        // TODO 3: mostrar carga, error y éxito
-                        return const Center(child: Text('TODO 3'));
-                        // FIN TODO 3
+                        // ✅ TODO 3: tres estados del FutureBuilder.
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          // Muestra el mensaje de snapshot.error sin el prefijo técnico.
+                          final mensaje = snapshot.error
+                              .toString()
+                              .replaceFirst(RegExp(r'^Exception:\s*'), '');
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  mensaje,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        if (!snapshot.hasData) {
+                          return const Center(child: Text('Sin datos'));
+                        }
+
+                        final pokemon = snapshot.data!;
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              if (pokemon.imagen.isNotEmpty)
+                                Image.network(
+                                  pokemon.imagen,
+                                  height: 190,
+                                  errorBuilder: (_, _, _) => const Icon(
+                                    Icons.image_not_supported,
+                                    size: 90,
+                                  ),
+                                ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'N.º ${pokemon.id} · ${pokemon.nombre}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 8,
+                                children: [
+                                  for (final tipo in pokemon.tipos)
+                                    Chip(label: Text(tipo)),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              // Reto: altura en metros y peso en kilogramos.
+                              Text(
+                                'Altura: ${pokemon.altura.toStringAsFixed(1)} m'
+                                '   ·   Peso: ${pokemon.peso.toStringAsFixed(1)} kg',
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
             ),
